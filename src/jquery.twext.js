@@ -84,25 +84,101 @@
     }
 
     var cr = 0;
+    var lastLength = 0;
+    var assignFlag = false;
+    var lengthKeys = [];
     function getClassFromLength(length, lengthClasses, cb) {
-      var className = check(lengthClasses[length], lengthClasses);
 
-      var nextOrPrev = (className.next || className.prev);
+      lengthKeys = (!lengthKeys || lengthKeys.length < 1) ? Object.keys(lengthClasses) : lengthKeys;
 
-      return cb(className);
+/*
+if PN undefined
+  set class to whichever flag is true
+if PN defined
+  don't change class but flag true corresponding flag
+ */
 
-      if (cr && !nextOrPrev) {
-        console.log('neither', cr);
-        return cb(cr);
-      } else if (className.next) {
-        console.log('next undefined');
-        cr = lengthClasses[length];
-      } else if (className.prev) {
-        console.log('prev undefined');
-        cr = lengthClasses[length];
+      // 1234567890
+      if (length === 0 && lastLength > 0) {
+        cr = 0;
+        return cb(lengthClasses[lengthKeys[cr]])
+      }
+      if (lastLength === 0 && length === 1) {
+        lastLength = length;
+        return cb(lengthClasses[lengthKeys[cr]]);
       }
 
-      return cb(cr);
+      if (lastLength === 0 && length > 1) {
+        var testKeys = lengthKeys.filter(function(elem) {
+          return elem < length;
+        });
+        console.log('lastlength was 0, testkeys length is %s and lengthKeys length is %s', testKeys.length, lengthKeys.length);
+
+        if (testKeys.length === 0) {
+          cr = 0;
+          console.log('testkeys length is 0, assigning %s as the key', cr + 1);
+          lastLength = length;
+          return cb(lengthClasses[lengthKeys[cr]]);
+        }
+
+        if (testKeys.length <= lengthKeys.length) {
+          cr = testKeys.length - 1;
+          console.log('testkeys was length %s, returning %s as the key', testKeys.length, cr);
+          lastLength = length;
+          return cb(lengthClasses[lengthKeys[cr]]);
+        }
+      }
+
+      if (lengthClasses[length]) {
+        console.log('hit a new class specificer %s', lengthClasses[length]);
+        assignFlag = true;
+        lastLength = length;
+        cr = lengthKeys.indexOf(length.toString());
+        console.log('cr value is %s', cr);
+        return cb(lengthClasses[length]);
+      } else {
+        if (length < lastLength && assignFlag) {
+          // 0: low, 1: med, 2: high
+          lastLength = length;
+          return cb(lengthClasses[lengthKeys[cr - 1]]);
+        } else {
+          lastLength = length;
+          assignFlag = false;
+        }
+      }
+
+      // if length in keys[length]
+      //   then assign class and mark assign flag true
+      // else
+      //   if currenthlength < lastLength && assignflag true
+      //     decrement keys[length]
+      //   else assignflag false
+
+      // if (className.prev) {
+      //   prevFlag = true;
+      //   // set cr to prev
+      //   // unless next className.next is undefined
+      // } else {
+      //   prevFlag = false;
+      // }
+
+      // if (className.next) {
+      //   nextFlag = true;
+      //   // cr is this
+      // }
+
+      // if (cr && !nextOrPrev) {
+      //   console.log('neither', cr);
+      //   return cb(cr);
+      // } else if (className.next) {
+      //   console.log('next undefined');
+      //   cr = lengthClasses[length];
+      // } else if (className.prev) {
+      //   console.log('prev undefined');
+      //   cr = lengthClasses[length];
+      // }
+
+      // return cb(cr);
 
 
 
@@ -199,7 +275,7 @@
     $.extend(Plugin.prototype, {
         init: function () {
           var $element = $(this.element);
-          $element.on('keyup', onChange);
+          $element.on('keyup keydown change', onChange);
         },
 
         onKeyUp: function () {
