@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>jQuery Boilerplate</title>
+    <style>
+      .twext-length-normal {
+        color: green;
+      }
+
+      .twext-length-medium {
+        color: orange;
+      }
+
+      .twext-length-high {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea name="e" class="myawesometextarea and something else " id="TT" cols="30" rows="10"></textarea>
+    <div class="label"></div>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="../src/jquery.twext.js"></script>
+    <script>
+      $(function() {
+        $("#TT").twext({
+          lengthElement: $('.label'),
+          lengthFormat: '%length written out of %maxLength'
+        });
+      });
+    </script>
+  </body>
+</html>

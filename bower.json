@@ -1,0 +1,17 @@
+{
+	"name": "jquery-twext",
+	"version": "3.5.0",
+	"authors": [
+		"Christian Petersen <chrs@cbp.io> (http://cbp.io)",
+    "Nathan Leniz <terakilobyte@gmail.com> (http://terakilobyte.com)"
+	],
+	"description": "A jQuery plugin for counting and validate text length",
+	"main": "src/jquery.twext.js",
+	"keywords": [
+		"jquery",
+		"plugin",
+		"text",
+    "length"
+	],
+	"license": "MIT"
+}

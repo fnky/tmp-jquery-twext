@@ -1,0 +1,37 @@
+{
+  "name": "jquery-twext",
+  "version": "3.5.0",
+  "description": "A jump-start for jQuery plugins development.",
+  "keywords": [
+    "jquery-plugin",
+    "jquery",
+    "boilerplate",
+    "plugins"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/freecodecamp/jquery-twext.git"
+  },
+  "bugs": {
+    "url": "https://github.com/freecodecamp/jquery-twext/issues"
+  },
+  "author": "Christian Petersen <chrs@cbp.io> (http://cbp.io)",
+  "homepage": "http://jqueryboilerplate.com",
+  "contributors": [
+    "Christian Petersen <chrs@cbp.io> (http://cbp.io)",
+    "Nathan Leniz <terakilobyte@gmail.com> (http://terakilobyte.com)"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-coffee": "^0.12.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-jshint": "^0.11.0",
+    "grunt-contrib-uglify": "^0.8.0",
+    "grunt-contrib-watch": "^0.6.1"
+  },
+  "scripts": {
+    "test": "grunt travis --verbose"
+  }
+}
