@@ -83,155 +83,40 @@
         return { prev: _p, next: _n };
     }
 
-    var cr = 0;
-    var lastLength = 0;
-    var assignFlag = false;
-    var lengthKeys = [];
+    var current;
+    var next;
+    var prev;
     function getClassFromLength(length, lengthClasses, cb) {
+      var lengthClassesKeys = Object.keys(lengthClasses);
 
-      lengthKeys = (!lengthKeys || lengthKeys.length < 1) ? Object.keys(lengthClasses) : lengthKeys;
+      if (!current) {
+        for (var i = 1; i < lengthClassesKeys.length - 1; ++i) {
+          var c1 = lengthClassesKeys[i - 1];
+          var c2 = lengthClassesKeys[i];
+          if (length >= c1 && length < c2) {
+            current = parseInt(c1);
+            prev = i > 1 ? parseInt(lengthClassesKeys[i - 1]) : current;
+            next = parseInt(c2);
 
-/*
-if PN undefined
-  set class to whichever flag is true
-if PN defined
-  don't change class but flag true corresponding flag
- */
-
-      // 1234567890
-      if (length === 0 && lastLength > 0) {
-        cr = 0;
-        return cb(lengthClasses[lengthKeys[cr]])
-      }
-      if (lastLength === 0 && length === 1) {
-        lastLength = length;
-        return cb(lengthClasses[lengthKeys[cr]]);
-      }
-
-      if (lastLength === 0 && length > 1) {
-        var testKeys = lengthKeys.filter(function(elem) {
-          return elem < length;
-        });
-        console.log('lastlength was 0, testkeys length is %s and lengthKeys length is %s', testKeys.length, lengthKeys.length);
-
-        if (testKeys.length === 0) {
-          cr = 0;
-          console.log('testkeys length is 0, assigning %s as the key', cr + 1);
-          lastLength = length;
-          return cb(lengthClasses[lengthKeys[cr]]);
-        }
-
-        if (testKeys.length <= lengthKeys.length) {
-          cr = testKeys.length - 1;
-          console.log('testkeys was length %s, returning %s as the key', testKeys.length, cr);
-          lastLength = length;
-          return cb(lengthClasses[lengthKeys[cr]]);
+            return cb(lengthClasses[current.toString()]);
+          }
         }
       }
 
-      if (lengthClasses[length]) {
-        console.log('hit a new class specificer %s', lengthClasses[length]);
-        assignFlag = true;
-        lastLength = length;
-        cr = lengthKeys.indexOf(length.toString());
-        console.log('cr value is %s', cr);
-        return cb(lengthClasses[length]);
-      } else {
-        if (length < lastLength && assignFlag) {
-          // 0: low, 1: med, 2: high
-          lastLength = length;
-          return cb(lengthClasses[lengthKeys[cr - 1]]);
-        } else {
-          lastLength = length;
-          assignFlag = false;
+      if (length < parseInt(current)) {
+        next = current;
+        current = prev;
+        var prevIdx = lengthClassesKeys.indexOf(prev.toString());
+        prev = lengthClassesKeys[Math.max(prevIdx - 1, 0)];
+      } else if (length >= next) {
+        while (length >= next && next !== current) {
+          prev = current;
+          current = next;
+          var nextIdx = lengthClassesKeys.indexOf(next.toString());
+          next = lengthClassesKeys[Math.min(nextIdx + 1, lengthClassesKeys.length - 1)];
         }
       }
-
-      // if length in keys[length]
-      //   then assign class and mark assign flag true
-      // else
-      //   if currenthlength < lastLength && assignflag true
-      //     decrement keys[length]
-      //   else assignflag false
-
-      // if (className.prev) {
-      //   prevFlag = true;
-      //   // set cr to prev
-      //   // unless next className.next is undefined
-      // } else {
-      //   prevFlag = false;
-      // }
-
-      // if (className.next) {
-      //   nextFlag = true;
-      //   // cr is this
-      // }
-
-      // if (cr && !nextOrPrev) {
-      //   console.log('neither', cr);
-      //   return cb(cr);
-      // } else if (className.next) {
-      //   console.log('next undefined');
-      //   cr = lengthClasses[length];
-      // } else if (className.prev) {
-      //   console.log('prev undefined');
-      //   cr = lengthClasses[length];
-      // }
-
-      // return cb(cr);
-
-
-
-      // // get the class from lengthClasses based on the length (key)
-      // var current = lengthClasses[length];
-      // var next = lengthClasses[length + 1];
-
-      // var lengthKeys = Object.keys(lengthClasses);
-
-      // // whenever we have found a class, we cache it (cr)
-      // if (length === 1 && lengthKeys.indexOf(length) === -1) {
-      //   console.log('edge case', lengthClasses[lengthKeys[0]]);
-      //   cr = 0;
-      //   return cb(lengthClasses[lengthKeys[0]]);
-      // } else if (length === 1 && lengthKeys.indexOf(length) !== -1) {
-      //   return cb(lengthClasses[lengthKeys[1]]);
-      // }
-
-      // if (current) {
-      //   cr = current;
-      // } else {
-      //   if (next) {
-      //     // reached new class going down
-      //   }
-      // }
-      // *
-      //  * if length doesn't match to a class
-      //  *   if length + 1 matches we've reached a new class going down
-      //  * if length matches we've reached a new class going up
-
-
-      // var next = (length > 0) ? length + 1 : 0;
-      // var nextIndex = lengthKeys.indexOf(next.toString());
-
-      // console.log('---------');
-      // console.log("nextIndex:", nextIndex);
-      // console.log("values of lClasses:", getValuesOfObject(lengthClasses))
-
-      // var prevIndex = lengthKeys.indexOf(length.toString());
-
-      // if (nextIndex < 0 && prevIndex !== -1) {
-      //   return cb(lengthClasses[lengthKeys[prevIndex]]);
-      // }
-
-      // if (nextIndex === 1 && prevIndex === -1) {
-      //   var nextClass = lengthClasses[lengthKeys[nextIndex]];
-      //   if (nextClass && nextIndex - 1 === length) {
-      //     return cb(nextClass);
-      //   }
-      // }
-
-      // console.log('previous', prevIndex);
-
+      return cb(lengthClasses[current.toString()]);
     }
 
     function getValuesOfObject(obj) {
@@ -275,7 +160,7 @@ if PN defined
     $.extend(Plugin.prototype, {
         init: function () {
           var $element = $(this.element);
-          $element.on('keyup keydown change', onChange);
+          $element.on('keydown keyup input propertychange', onChange);
         },
 
         onKeyUp: function () {
