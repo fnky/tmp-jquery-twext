@@ -86,6 +86,9 @@
     var current;
     var next;
     var prev;
+    var currentIndex;
+    var nextIndex;
+    var prevIndex;
     function getClassFromLength(length, lengthClasses, cb) {
       var lengthClassesKeys = Object.keys(lengthClasses);
 
@@ -97,23 +100,29 @@
             current = parseInt(c1);
             prev = i > 1 ? parseInt(lengthClassesKeys[i - 1]) : current;
             next = parseInt(c2);
-
+            currentIndex = i - 1;
+            nextIndex = i;
+            prevIndex = currentIndex;
             return cb(lengthClasses[current.toString()]);
           }
         }
       }
 
-      if (length < parseInt(current)) {
+      if (length < current) {
+        nextIndex = currentIndex;
+        currentIndex = prevIndex;
+        prevIndex = Math.max(prevIndex - 1, 0);
         next = current;
         current = prev;
-        var prevIdx = lengthClassesKeys.indexOf(prev.toString());
-        prev = lengthClassesKeys[Math.max(prevIdx - 1, 0)];
+        prev = lengthClassesKeys[prevIndex];
       } else if (length >= next) {
         while (length >= next && next !== current) {
+          prevIndex = currentIndex;
+          currentIndex = nextIndex;
+          nextIndex = Math.min(nextIndex + 1, lengthClassesKeys.length - 1);
           prev = current;
           current = next;
-          var nextIdx = lengthClassesKeys.indexOf(next.toString());
-          next = lengthClassesKeys[Math.min(nextIdx + 1, lengthClassesKeys.length - 1)];
+          next = lengthClassesKeys[nextIndex];
         }
       }
       return cb(lengthClasses[current.toString()]);
